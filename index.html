@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6dcd6">
+<meta property="og:title" content="Срочная доставка заботы 🚑">
+<meta property="og:description" content="Для Ксюшеньки">
+<meta property="og:type" content="website">
+<style>[hidden]{display:none!important}body{margin:0;font:14px system-ui,sans-serif}</style>
+<title>Ксюшенька, поправляйся</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Neucha&display=swap">
+<style>
+/* Layout: one 9:16 storybook screen; tenderness meter on top, the care button at the bottom */
+:root{
+  --bg:#f6dcd6; --room:#fdebe6; --line:#5b4036; --pink:#f48fa3; --soft:#8a6a5e;
+  --hand:'Neucha','Comic Sans MS',cursive; color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);display:flex;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;font-family:var(--hand)}
+#stage{position:relative;width:min(100%,calc((100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)) * 9 / 16));
+  aspect-ratio:9/16;max-width:100%;container-type:size;overflow:hidden;border-radius:14px;background:var(--room)}
+#s{position:absolute;inset:0;width:100%;height:100%;display:block}
+.layer{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4cqh;text-align:center}
+.layer[hidden],#hud[hidden],#act[hidden]{display:none!important}
+#stage.loading .card,#stage.loading .hint{visibility:hidden}
+
+#hud{position:absolute;top:3cqw;left:3cqw;display:flex;align-items:center;gap:2cqw;background:#fff;border:.6cqw solid var(--line);
+  border-radius:10cqw;padding:1.4cqw 3.5cqw;font-size:5.5cqw;color:var(--line)}
+.meter{width:30cqw;height:3.2cqw;border:.5cqw solid var(--line);border-radius:3cqw;overflow:hidden;background:#fff}
+.meter i{display:block;height:100%;width:0;background:var(--pink);transition:width .9s ease-out}
+#mute{position:absolute;top:3cqw;right:3cqw;z-index:5;width:11cqw;height:11cqw;border-radius:50%;border:.6cqw solid var(--line);
+  background:#fff;color:var(--line);font-size:5.5cqw;cursor:pointer}
+#mute.off{opacity:.5;text-decoration:line-through}
+#act{position:absolute;left:50%;bottom:3cqh;transform:translateX(-50%);font-family:var(--hand);font-size:6.2cqw;background:var(--pink);
+  color:#fff;border:.7cqw solid var(--line);border-radius:4cqw;padding:2cqw 6cqw;box-shadow:0 1.2cqw 0 var(--line);cursor:pointer;white-space:nowrap}
+#act:active{transform:translateX(-50%) translateY(1cqw);box-shadow:0 .2cqw 0 var(--line)}
+#act:disabled{opacity:.55}
+
+#intro{background:var(--room);cursor:pointer}
+.card{background:#fff;border:.8cqw solid var(--line);border-radius:5cqw;padding:6cqw 7cqw;width:76cqw;box-sizing:border-box;box-shadow:0 1.6cqw 0 var(--line)}
+.card h1{margin:0 0 2cqw;font-size:8cqw;font-weight:400;color:var(--line);text-wrap:balance;line-height:1.15}
+.card p{margin:0;font-size:5.4cqw;color:var(--soft)}
+.hint{font-size:4.6cqw;color:var(--line);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+#final{justify-content:flex-start;padding-top:12cqh;pointer-events:none}
+#final .card{width:82cqw;padding:3.5cqw 5cqw}
+#final h1{font-size:7.4cqw;text-wrap:wrap;margin-bottom:1cqw}
+#finalBtns{position:absolute;left:0;right:0;bottom:3cqh;display:flex;gap:4cqw;justify-content:center;pointer-events:auto}
+.btn2{font-family:var(--hand);font-size:5.4cqw;background:#fff;color:var(--line);border:.7cqw solid var(--line);border-radius:4cqw;
+  padding:1.8cqw 4.5cqw;box-shadow:0 1cqw 0 var(--line);cursor:pointer}
+.btn2:active{transform:translateY(.8cqw);box-shadow:0 .2cqw 0 var(--line)}
+button:focus-visible,#intro:focus-visible{outline:3px solid var(--pink);outline-offset:3px}
+
+.bob{animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.breathe{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.025,.975)}}
+.steam path{animation:steam 2.2s ease-in-out infinite;opacity:0}
+.steam path:nth-child(2){animation-delay:.8s}
+@keyframes steam{30%{opacity:.8}100%{opacity:0;transform:translateY(-14px)}}
+.tf{transform-box:fill-box;transform-origin:center}
+#walker{transform-box:fill-box;transform-origin:50% 100%}
+#zzz text{animation:zzz 3s ease-in-out infinite;opacity:0}
+#zzz text:nth-child(2){animation-delay:1s}
+@keyframes zzz{30%{opacity:.8}100%{opacity:0;transform:translate(12px,-26px)}}
+@media (prefers-reduced-motion:reduce){.bob,.breathe,.steam path,.hint,#zzz text{animation:none}}
+</style>
+
+<div id="stage" class="loading">
+  <svg id="s" viewBox="0 0 540 960" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="hud" hidden><span aria-hidden="true">💗</span><div class="meter" aria-label="Шкала нежности"><i id="fill"></i></div></div>
+  <button id="act" type="button" hidden></button>
+  <div id="final" class="layer" hidden>
+    <div class="card">
+      <h1>Поправляйся скорее,<br>Ксюшенька ❤️</h1>
+      <p>Я рядом</p>
+    </div>
+    <div id="finalBtns">
+      <button class="btn2" id="moreKiss" type="button">Поцелуйчик 😘</button>
+      <button class="btn2" id="moreHug" type="button">Обнимашки 🤗</button>
+    </div>
+  </div>
+  <div id="intro" class="layer" role="button" tabindex="0" aria-label="Открыть">
+    <div class="card"><h1>Срочная доставка заботы 🚑</h1><p>для Ксюшеньки</p></div>
+    <div class="hint">нажми, чтобы открыть</div>
+  </div>
+  <button id="mute" type="button" aria-label="Звук">♪</button>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const rnd = (a, b) => a + Math.random() * (b - a);
+
+// ---------- sound: synthesized, no files ----------
+let ac, master, music, nbuf, muted = false;
+const tracks = new Set();
+const mtof = m => 440 * 2 ** ((m - 69) / 12);
+function initAudio() {
+  if (ac) { ac.resume(); return; }
+  try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch { return; }
+  const comp = ac.createDynamicsCompressor();
+  master = ac.createGain(); master.gain.value = muted ? 0 : .8; master.connect(comp).connect(ac.destination);
+  music = ac.createGain(); music.gain.value = .5; music.connect(master);
+  nbuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+  const ch = nbuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  setInterval(schedule, 25);
+}
+function tone(t, hz, dur, {type = 'sine', vol = .2, at = .005, out = music, hzEnd} = {}) {
+  if (!ac) return;
+  const o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(hz, t);
+  if (hzEnd) o.frequency.exponentialRampToValueAtTime(hzEnd, t + dur * .6);
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + at); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  o.connect(g).connect(out); o.start(t); o.stop(t + dur + .05);
+}
+function noise(t, dur, {vol = .3, type = 'highpass', f = 6000, fEnd, q = 1, out = music} = {}) {
+  if (!ac) return;
+  const s = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = nbuf; fl.type = type; fl.Q.value = q; fl.frequency.setValueAtTime(f, t);
+  if (fEnd) fl.frequency.exponentialRampToValueAtTime(fEnd, t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+  s.connect(fl).connect(g).connect(out); s.start(t); s.stop(t + dur);
+}
+// gentle waltz in 3/4, D major: 8 bars of 12 sixteenth-steps
+const MEL = [[0,78,6],[6,81,3],[9,78,3],[12,79,6],[18,83,3],[21,81,3],[24,78,6],[30,74,6],[36,76,9],[45,78,3],
+             [48,81,6],[54,86,3],[57,85,3],[60,83,6],[66,79,6],[72,81,4],[76,79,4],[80,76,4],[84,74,12]];
+const CH = [[62,66,69],[55,59,62],[59,62,66],[57,61,64],[62,66,69],[55,59,62],[57,61,64],[62,66,69]];
+const lullaby = {bpm: 100, len: 96, fn(step, t, out) {
+  const sp = 60 / 100 / 4, s = step % 12, ch = CH[step / 12 | 0];
+  MEL.filter(n => n[0] === step).forEach(([, n, l]) => {
+    tone(t, mtof(n), l * sp + .8, {vol: .13, out});
+    tone(t, mtof(n + 12), .5, {type: 'triangle', vol: .02, out});
+  });
+  if (s === 0) tone(t, mtof(ch[0] - 12), sp * 11, {type: 'triangle', vol: .11, out});
+  if (s === 4 || s === 8) ch.forEach(m => tone(t, mtof(m), sp * 3.5, {vol: .03, out}));
+}};
+function play(def) {
+  if (!ac) return null;
+  const tr = {...def, step: 0, next: ac.currentTime + .05, gain: ac.createGain()};
+  tr.gain.connect(music); tracks.add(tr); return tr;
+}
+function schedule() {
+  for (const tr of tracks) while (tr.next < ac.currentTime + .15) {
+    tr.fn(tr.step % tr.len, tr.next, tr.gain); tr.next += 60 / tr.bpm / 4; tr.step++;
+  }
+}
+const now = () => ac ? ac.currentTime : 0;
+const sfx = {
+  pop: () => tone(now(), 700, .15, {vol: .06, out: master, hzEnd: 1200}),
+  whoosh: () => noise(now(), .5, {vol: .12, type: 'bandpass', f: 400, fEnd: 2200, out: master}),
+  clink: () => { tone(now(), 2400, .35, {type: 'triangle', vol: .07, out: master}); tone(now() + .09, 3200, .3, {type: 'triangle', vol: .05, out: master}); },
+  pat: () => tone(now(), 300, .12, {type: 'triangle', vol: .06, out: master, hzEnd: 220}),
+  kiss: () => { tone(now(), 1800, .08, {vol: .08, out: master, hzEnd: 900}); tone(now() + .1, 2200, .1, {vol: .06, out: master, hzEnd: 1200}); },
+  sparkle: () => [84, 88, 91, 96].forEach((m, i) => tone(now() + i * .08, mtof(m), .45, {type: 'triangle', vol: .06, out: master})),
+  hug: () => [72, 76, 79, 84, 88].forEach((m, i) => tone(now() + i * .12, mtof(m), .9, {vol: .07, out: master}))
+};
+const $m = $('mute');
+$m.onclick = () => {
+  muted = !muted; $m.classList.toggle('off', muted);
+  if (master) master.gain.setTargetAtTime(muted ? 0 : .8, ac.currentTime, .05);
+};
+
+// ---------- scene ----------
+const L = '#5b4036', G = '#9a96a0', GL = '#bdb8c1';
+const S = `stroke="${L}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"`;
+const tulip = (x, y, c) => `<path d="M${x} ${y + 12} V-38" stroke="#6bb36b" stroke-width="4"/>
+  <path d="M${x - 11} ${y} q0 -16 5 -18 l6 7 l6 -7 q5 2 5 18 q0 11 -11 11 q-11 0 -11 -11Z" fill="${c}" ${S} stroke-width="3"/>`;
+const heartPath = 'M0 0 C-6 -8 -16 -2 0 10 C16 -2 6 -8 0 0Z';
+
+$('s').innerHTML = `
+<defs>
+  <pattern id="dots" width="44" height="44" patternUnits="userSpaceOnUse"><rect width="44" height="44" fill="#fdebe6"/>
+    <path d="M22 26 c-2 -3 -7 -2 0 5 c7 -7 2 -8 0 -5Z" fill="#f8cfd2"/></pattern>
+  <pattern id="plaidPat" width="32" height="32" patternUnits="userSpaceOnUse"><rect width="32" height="32" fill="#f6a6b6"/>
+    <rect width="12" height="32" fill="#fff" opacity=".35"/><rect width="32" height="12" fill="#fff" opacity=".35"/>
+    <rect x="22" width="3" height="32" fill="#e07c93" opacity=".6"/><rect y="22" width="32" height="3" fill="#e07c93" opacity=".6"/></pattern>
+</defs>
+<rect width="540" height="640" fill="url(#dots)"/>
+<rect y="620" width="540" height="340" fill="#f2cdb9"/>
+<path d="M0 720 H540 M0 840 H540" stroke="#e2b8a2" stroke-width="3"/><path d="M0 620 H540" ${S}/>
+
+<rect x="60" y="110" width="170" height="190" rx="18" fill="#cdeaf8" ${S}/>
+<circle cx="105" cy="160" r="18" fill="#fff6c9"/><circle cx="185" cy="240" r="3" fill="#fff"/><circle cx="165" cy="150" r="2.5" fill="#fff"/>
+<path d="M145 110 V300 M60 205 H230" ${S}/>
+<path d="M50 100 Q90 200 60 312 L44 312 L44 100Z M240 100 Q200 200 230 312 L246 312 L246 100Z" fill="#f7b7c3" ${S}/>
+<rect x="330" y="140" width="120" height="100" rx="12" fill="#fff" ${S}/>
+<path d="M390 175 c-6 -12 -28 -8 0 24 c28 -32 6 -36 0 -24Z" fill="#f48fa3" ${S} stroke-width="3"/>
+
+<rect x="420" y="470" width="100" height="165" rx="12" fill="#eab89c" ${S}/><path d="M420 545 H520" ${S}/><circle cx="470" cy="590" r="6" fill="${L}"/>
+<rect x="45" y="600" width="22" height="60" rx="6" fill="#e2a68f" ${S}/><rect x="363" y="600" width="22" height="60" rx="6" fill="#e2a68f" ${S}/>
+<rect x="30" y="360" width="370" height="200" rx="40" fill="#f7c4b4" ${S}/>
+<rect x="20" y="500" width="390" height="135" rx="28" fill="#fff" ${S}/>
+<ellipse cx="220" cy="490" rx="110" ry="40" fill="#fff" ${S}/>
+
+<g id="wcat"><g class="breathe">
+  <path d="M152 425 L160 376 L194 400Z M288 425 L280 376 L246 400Z" fill="#fff" ${S}/>
+  <path d="M162 408 L166 388 L182 399Z M278 408 L274 388 L258 399Z" fill="#f9c6cc"/>
+  <ellipse cx="220" cy="455" rx="88" ry="68" fill="#fff" ${S}/>
+  <ellipse id="blushL" class="tf" cx="174" cy="474" rx="13" ry="7" fill="#f9b9c2"/><ellipse id="blushR" class="tf" cx="266" cy="474" rx="13" ry="7" fill="#f9b9c2"/>
+  <g id="f-tired"><path d="M181 448 q11 8 22 0 M237 448 q11 8 22 0" fill="none" ${S}/><path d="M178 440 l10 -4 M262 440 l-10 -4" ${S} stroke-width="3"/>
+    <path d="M212 480 q8 -6 16 0" fill="none" ${S} stroke-width="3"/></g>
+  <g id="f-calm" display="none"><path d="M181 454 q11 -9 22 0 M237 454 q11 -9 22 0" fill="none" ${S}/>
+    <path d="M210 472 q5 6 10 0 q5 6 10 0" fill="none" ${S} stroke-width="3"/></g>
+  <g id="f-happy" display="none"><path d="M181 455 q11 -13 22 0 M237 455 q11 -13 22 0" fill="none" ${S}/>
+    <path d="M211 468 q9 14 18 0Z" fill="#f48fa3" ${S} stroke-width="3"/></g>
+  <g id="zzz" font-family="Neucha, cursive" fill="#b9a29a" font-size="26"><text x="300" y="400">z</text><text x="318" y="380" font-size="20">z</text></g>
+</g></g>
+<rect x="30" y="505" width="370" height="110" rx="24" fill="#e8f1fb" ${S}/>
+<g id="plaid" class="tf" style="opacity:0"><rect x="26" y="500" width="378" height="118" rx="26" fill="url(#plaidPat)" ${S}/>
+  <path d="M40 522 H390" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".7"/></g>
+<ellipse cx="190" cy="514" rx="17" ry="12" fill="#fff" ${S}/><ellipse cx="250" cy="514" rx="17" ry="12" fill="#fff" ${S}/>
+
+<g transform="translate(446 470)"><g id="cup" class="tf" style="opacity:0">
+  <g class="steam" fill="none" stroke="#c9b3ab" stroke-width="3" stroke-linecap="round"><path d="M-8 -50 q-6 -10 0 -20 q6 -10 0 -20"/><path d="M8 -50 q-6 -10 0 -20 q6 -10 0 -20"/></g>
+  <path d="M22 -32 q14 0 14 12 q0 12 -14 10" fill="none" ${S}/>
+  <path d="M-22 -40 H22 V-8 Q22 0 14 0 H-14 Q-22 0 -22 -8Z" fill="#fff" ${S}/>
+  <ellipse cx="0" cy="-40" rx="22" ry="5" fill="#d29a5c" ${S} stroke-width="3"/>
+  <path d="M0 -22 c-2 -3 -7 -2 0 6 c7 -8 2 -9 0 -6Z" fill="#f48fa3"/></g></g>
+<g transform="translate(498 470)"><g id="vase" class="tf" style="opacity:0">
+  ${tulip(-12, -70, '#f48fa3')}${tulip(12, -70, '#e9667c')}${tulip(0, -88, '#f7d26a')}
+  <path d="M-15 -40 Q-20 -20 -12 0 H12 Q20 -20 15 -40Z" fill="#bfe3f5" ${S}/></g></g>
+
+<g transform="translate(140 850) scale(1.2)"><g id="walker">
+  <ellipse cx="0" cy="0" rx="55" ry="9" fill="#000" opacity=".1"/>
+  <g class="bob"><g class="breathe">
+    <path d="M42 -28 q42 -6 32 -52" fill="none" stroke="${L}" stroke-width="22" stroke-linecap="round"/>
+    <path d="M42 -28 q42 -6 32 -52" fill="none" stroke="${G}" stroke-width="14" stroke-linecap="round"/>
+    <ellipse cx="-24" cy="-6" rx="16" ry="9" fill="${G}" ${S}/><ellipse cx="24" cy="-6" rx="16" ry="9" fill="${G}" ${S}/>
+    <ellipse cx="0" cy="-50" rx="55" ry="50" fill="${G}" ${S}/>
+    <ellipse cx="0" cy="-42" rx="30" ry="26" fill="${GL}"/>
+    <path d="M-52 -148 L-46 -196 L-14 -176Z M52 -148 L46 -196 L14 -176Z" fill="${G}" ${S}/>
+    <path d="M-44 -166 L-41 -186 L-26 -176Z M44 -166 L41 -186 L26 -176Z" fill="#f4b6c0"/>
+    <ellipse cx="0" cy="-130" rx="68" ry="55" fill="${G}" ${S}/>
+    <ellipse cx="0" cy="-112" rx="26" ry="16" fill="${GL}"/>
+    <circle cx="-24" cy="-132" r="6" fill="${L}"/><circle cx="24" cy="-132" r="6" fill="${L}"/>
+    <circle cx="-22" cy="-134" r="2" fill="#fff"/><circle cx="26" cy="-134" r="2" fill="#fff"/>
+    <path d="M-10 -116 q5 6 10 0 q5 6 10 0" fill="none" ${S} stroke-width="3"/>
+    <ellipse cx="-42" cy="-114" rx="11" ry="6" fill="#f4a9b6"/><ellipse cx="42" cy="-114" rx="11" ry="6" fill="#f4a9b6"/>
+    <ellipse id="pawL" cx="-28" cy="-68" rx="15" ry="12" fill="${G}" ${S}/><ellipse cx="28" cy="-68" rx="15" ry="12" fill="${G}" ${S}/>
+    <g id="patArm" style="opacity:0"><path d="M-48 -72 Q-102 -128 -95 -190" fill="none" stroke="${L}" stroke-width="30" stroke-linecap="round"/>
+      <path d="M-48 -72 Q-102 -128 -95 -190" fill="none" stroke="${G}" stroke-width="22" stroke-linecap="round"/>
+      <ellipse cx="-95" cy="-196" rx="17" ry="14" fill="${G}" ${S}/></g>
+  </g></g>
+</g></g>
+
+<g id="gbubble" style="opacity:0">
+  <circle cx="-22" cy="16" r="8" fill="#fff" ${S} stroke-width="3"/><circle cx="-34" cy="32" r="5" fill="#fff" ${S} stroke-width="3"/>
+  <rect x="-136" y="-96" width="272" height="96" rx="26" fill="#fff" ${S}/>
+  <text id="gtext" x="0" y="-40" font-family="Neucha, cursive" font-size="28" fill="${L}" text-anchor="middle"></text></g>
+<g id="hearts"></g>`;
+
+const walker = $('walker'), wcat = $('wcat'), gbubble = $('gbubble'), hearts = $('hearts');
+const fade = (el, from, to, duration) => el.animate([{opacity: from}, {opacity: to}], {duration, fill: 'forwards'}).finished;
+const jump = (el, h) => el.animate([{transform: 'translateY(0)'}, {transform: `translateY(-${h}px)`}, {transform: 'translateY(0)'}], {duration: 400, easing: 'ease-out'});
+const svgEl = (tag, attrs) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
+
+function burstHearts(cx, cy, n = 12) {
+  for (let i = 0; i < n; i++) {
+    const h = svgEl('path', {d: heartPath, fill: ['#f27a93', '#f6a5b6', '#e85d78'][i % 3]});
+    hearts.appendChild(h);
+    const x = cx + rnd(-80, 80), y = cy + rnd(-20, 20), sc = rnd(1.4, 2.4);
+    h.animate([{transform: `translate(${x}px,${y}px) scale(${sc})`, opacity: 0},
+               {transform: `translate(${x + rnd(-20, 20)}px,${y - 50}px) scale(${sc})`, opacity: 1, offset: .2},
+               {transform: `translate(${x + rnd(-50, 50)}px,${y - rnd(220, 360)}px) scale(${sc})`, opacity: 0}],
+      {duration: rnd(1800, 2600), delay: i * 110, easing: 'ease-out', fill: 'forwards'}).finished.then(() => h.remove());
+  }
+}
+
+// one big heart pops at the kitten's cheek with a little "чмок"
+function kissPop() {
+  sfx.kiss();
+  const g = svgEl('g', {});
+  g.innerHTML = `<path d="${heartPath}" fill="#e85d78" stroke="${L}" stroke-width="1.2"/>`;
+  hearts.appendChild(g);
+  g.animate([{transform: 'translate(262px,470px) scale(0)', opacity: 1}, {transform: 'translate(262px,450px) scale(3.2)', opacity: 1, offset: .35},
+             {transform: 'translate(285px,330px) scale(2.6)', opacity: 0}], {duration: 1700, easing: 'ease-out', fill: 'forwards'}).finished.then(() => g.remove());
+  ['blushL', 'blushR'].forEach(id => $(id).animate([{transform: 'scale(1)', fill: '#f9b9c2'}, {transform: 'scale(1.5)', fill: '#f48fa3'}, {transform: 'scale(1)', fill: '#f9b9c2'}],
+    {duration: 1600, easing: 'ease-in-out'}));
+}
+
+function setMood(m) { ['tired', 'calm', 'happy'].forEach(k => $('f-' + k).setAttribute('display', k === m ? 'inline' : 'none')); }
+
+// the grey cat walks between a few poses; each move starts from wherever it stands now
+// bed: beside the bed's right edge so she stays visible; hug: cheek to cheek
+const POSE = {home: 'none', bed: 'translate(196px,-175px) rotate(-6deg)', hug: 'translate(183px,-175px) rotate(-12deg)'};
+// thought bubble: bottom-center of the bubble (world coords) + where its two tail dots go (relative).
+// At home the space above his head is the bed, so the bubble sits to his right instead of covering her face.
+const AT_BED = {pos: [395, 335], tail: [[-22, 16], [-34, 32]]};
+const BUBBLE_AT = {home: {pos: [385, 650], tail: [[-150, 10], [-168, 24]]}, bed: AT_BED, hug: AT_BED};
+let pose = POSE.home, poseName = 'home', bubbleShown = false;
+
+function hideBubble() {
+  if (!bubbleShown) return;
+  bubbleShown = false;
+  fade(gbubble, 1, 0, 300);
+}
+
+async function say(text) {
+  bubbleShown = true;
+  const lines = text.split('\n'), gt = $('gtext');
+  gt.innerHTML = lines.map((l, i) => `<tspan x="0" dy="${i ? 1.15 : 0}em">${l}</tspan>`).join('');
+  gt.setAttribute('y', -40 - (lines.length - 1) * 16);
+  const at = BUBBLE_AT[poseName], dots = gbubble.querySelectorAll('circle');
+  gbubble.setAttribute('transform', `translate(${at.pos.join(' ')})`);
+  at.tail.forEach(([x, y], i) => { dots[i].setAttribute('cx', x); dots[i].setAttribute('cy', y); });
+  sfx.pop();
+  await fade(gbubble, 0, 1, 250);
+}
+
+const moveTo = (p, duration = 1200) => {
+  const from = pose; pose = POSE[p]; poseName = p;
+  return walker.animate([{transform: from}, {transform: pose}], {duration, easing: 'cubic-bezier(.5,0,.3,1)', fill: 'forwards'}).finished;
+};
+
+// item flies from the grey cat's paws (world ≈ 140,768) to its spot on the nightstand
+const deliver = (el, tx, ty) => {
+  const dx = 140 - tx, dy = 768 - ty;
+  return el.animate([{transform: `translate(${dx}px,${dy}px) scale(1.4)`, opacity: 1},
+                     {transform: `translate(${dx * .45}px,${dy * .45 - 140}px) scale(1.2)`, opacity: 1},
+                     {transform: 'none', opacity: 1}], {duration: 950, easing: 'ease-in-out', fill: 'forwards'}).finished;
+};
+
+const STEPS = [
+  {btn: 'Укрыть пледом 🧣', say: 'Чтобы было\nтепло и уютно', async act() {
+    jump(walker, 30); sfx.whoosh();
+    await $('plaid').animate([{transform: 'translateY(-560px) rotate(-6deg)', opacity: 1}, {transform: 'translateY(12px)', opacity: 1, offset: .8},
+      {transform: 'none', opacity: 1}], {duration: 900, easing: 'ease-in', fill: 'forwards'}).finished;
+  }},
+  {btn: 'Принести чаёк 🍵', say: 'Тёпленький,\nкак ты любишь', async act() {
+    jump(walker, 30); await deliver($('cup'), 446, 470); sfx.clink();
+  }},
+  {btn: 'Подарить цветы 💐', say: 'А это тебе', async act() {
+    jump(walker, 30); sfx.sparkle(); await deliver($('vase'), 498, 470);
+    jump(wcat, 14);
+  }},
+  {btn: 'Погладить по голове', say: 'Всё будет хорошо', mood: 'calm', async act() {
+    fade($('zzz'), 1, 0, 400);
+    hideBubble();
+    await moveTo('bed');
+    // the left paw itself goes up onto her head, so the cat never has three paws
+    const arm = $('patArm'), pawL = $('pawL');
+    pawL.setAttribute('display', 'none');
+    await fade(arm, 0, 1, 200);
+    setMood('calm');
+    for (let i = 0; i < 3; i++) {
+      sfx.pat();
+      await arm.animate([{transform: 'none'}, {transform: 'translate(2px,7px)'}, {transform: 'none'}], {duration: 450, easing: 'ease-in-out'}).finished;
+    }
+    await fade(arm, 1, 0, 200);
+    pawL.removeAttribute('display');
+  }},
+  {btn: 'Поцеловать 😘', async act() {
+    await moveTo('hug', 600);
+    kissPop();
+    await wait(900);
+    await moveTo('bed', 600);
+  }},
+  {btn: 'Обнять 🤗', say: 'И самое главное —\nобнимашки', mood: 'happy', async act() {
+    await wait(500);
+    hideBubble();
+    await moveTo('hug', 900);
+    sfx.hug();
+    burstHearts(270, 440, 16);
+  }}
+];
+
+let step = 0;
+const act = $('act');
+act.addEventListener('click', async () => {
+  if (act.disabled) return;
+  act.disabled = true;
+  const st = STEPS[step];
+  if (st.say) { await say(st.say); await wait(900); }
+  await st.act();
+  if (st.mood) setMood(st.mood);
+  step++;
+  $('fill').style.width = step / STEPS.length * 100 + '%';
+  if (step < STEPS.length) {
+    await wait(700);
+    hideBubble();
+    act.textContent = STEPS[step].btn;
+    act.disabled = false;
+  } else {
+    act.hidden = true;
+    await wait(1600);
+    $('final').hidden = false;
+    $('final').animate([{opacity: 0, transform: 'translateY(-20px)'}, {opacity: 1, transform: 'none'}], {duration: 600, easing: 'ease-out'});
+  }
+});
+
+$('moreKiss').addEventListener('click', () => {
+  walker.animate([{transform: POSE.hug}, {transform: 'translate(188px,-180px) rotate(-16deg)'}, {transform: POSE.hug}], {duration: 500, easing: 'ease-out'});
+  kissPop();
+});
+$('moreHug').addEventListener('click', () => {
+  sfx.hug();
+  burstHearts(270, 520, 14);
+  walker.animate([{transform: POSE.hug}, {transform: 'translate(178px,-170px) rotate(-14deg) scale(1.06,.94)'}, {transform: POSE.hug}],
+    {duration: 500, easing: 'ease-out'});
+  jump(wcat, 12);
+});
+
+// ---------- start ----------
+const fontsReady = Promise.race([document.fonts?.load('30px Neucha', 'Ксюша').catch(() => {}), wait(3000)]);
+fontsReady.then(() => $('stage').classList.remove('loading'));
+
+const intro = $('intro');
+async function begin() {
+  if (intro.hidden) return;
+  initAudio();
+  play(lullaby);
+  await fade(intro, 1, 0, 500);
+  intro.hidden = true;
+  $('hud').hidden = false;
+  await wait(900);
+  act.textContent = STEPS[0].btn;
+  act.hidden = false;
+  act.animate([{opacity: 0}, {opacity: 1}], {duration: 400});
+}
+intro.addEventListener('click', begin);
+intro.addEventListener('keydown', e => (e.key === 'Enter' || e.key === ' ') && begin());
+</script>
+
+</html>
